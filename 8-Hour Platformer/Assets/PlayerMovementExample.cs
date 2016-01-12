@@ -14,7 +14,7 @@ public class PlayerMovementExample : MonoBehaviour {
     Vector2 movement;           //Used for moving the player
     Rigidbody playerRigidbody;  //Player's rigid body
     float maxSpeed = 10;
-    bool playerGrounded = false;
+    bool jump = true;
 
     void Awake()
     {
@@ -27,12 +27,16 @@ public class PlayerMovementExample : MonoBehaviour {
         //For three D movement but can be changed
         float h = Input.GetAxisRaw("Horizontal");//Input for horizontal movement
         float v = Input.GetAxisRaw("Vertical");// Input
-
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+       
+        if(jump == true)
         {
-            playerRigidbody.velocity = new Vector2(h, jumpHeight);
-        }
-
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space))
+            {
+                playerRigidbody.velocity = new Vector2(h, jumpHeight);
+                jump = false;
+            }
+        }    
+       
         movement = new Vector2(h, v);
 
         if (playerRigidbody.velocity.magnitude < maxSpeed)  //Keeps player at a speed
@@ -62,16 +66,16 @@ public class PlayerMovementExample : MonoBehaviour {
         } 
     }
 
-    void OnCollisionStay(Collision other)  //Used to detect Enemies who collide with the player
+    void OnCollisionEnter(Collision other)  //Used to detect Enemies who collide with the player
     {
         if (other.gameObject.CompareTag("Enemy"))
         {
             Die();
         }
 
-        if(other.gameObject.CompareTag("Ground"))
+        else if(other.gameObject.CompareTag("Ground"))
         {
-            playerGrounded = true;
+            jump = true;
         }
     }
 
