@@ -2,18 +2,19 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class PlayerMovement : MonoBehaviour {
+public class PlayerMovementExample : MonoBehaviour {
 
     public float speed = 6f;    //Speed of player
-    public Text scoreText;      //The score text element
     public GameObject[] Coll;   //All the collectables in the level
+    public float jumpHeight = 10f;
 
     int maxScore;
     int currentScore;          //Number of collectables
     Vector3 spawn;              //Spawn points
-    Vector3 movement;           //Used for moving the player
+    Vector2 movement;           //Used for moving the player
     Rigidbody playerRigidbody;  //Player's rigid body
     float maxSpeed = 10;
+    bool playerGrounded = false;
 
     void Awake()
     {
@@ -23,20 +24,26 @@ public class PlayerMovement : MonoBehaviour {
 
     void FixedUpdate()
     {
-    //For three D movement but can be changed
-        //float h = Input.GetAxisRaw("Horizontal");//Input for horizontal movement
-        //float v = Input.GetAxisRaw("Vertical");// Input 
-        //movement = new Vector3(h, 0f, v);
+        //For three D movement but can be changed
+        float h = Input.GetAxisRaw("Horizontal");//Input for horizontal movement
+        float v = Input.GetAxisRaw("Vertical");// Input
 
-        //if (playerRigidbody.velocity.magnitude < maxSpeed)  //Keeps player at a speed
-        //{
-        //    playerRigidbody.AddForce(movement * speed);
-        //}
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            playerRigidbody.velocity = new Vector2(h, jumpHeight);
+        }
+
+        movement = new Vector2(h, v);
+
+        if (playerRigidbody.velocity.magnitude < maxSpeed)  //Keeps player at a speed
+        {
+            playerRigidbody.AddForce(movement * speed);
+        }
     }
 
     void Die()//Death and set to spawn point
     {
-        Instantiate(deathParticals, transform.position, Quaternion.identity);
+        //Instantiate(deathParticals, transform.position, Quaternion.identity);
         transform.position = spawn;
     }
 
@@ -46,20 +53,25 @@ public class PlayerMovement : MonoBehaviour {
         {
             other.gameObject.SetActive(false);
             currentScore -= 1;
-            SetScoreText();
+
         }
 
         if (other.transform.tag == ("Goal") && currentScore <= 0)//Goal trigger
         {
-            LevelController.CompleteLevel();
-        }
+            //LevelController.CompleteLevel();
+        } 
     }
 
-    void OnCollisionEnter(Collision other)  //Used to detect Enemies who collide with the player
+    void OnCollisionStay(Collision other)  //Used to detect Enemies who collide with the player
     {
         if (other.gameObject.CompareTag("Enemy"))
         {
             Die();
+        }
+
+        if(other.gameObject.CompareTag("Ground"))
+        {
+            playerGrounded = true;
         }
     }
 
