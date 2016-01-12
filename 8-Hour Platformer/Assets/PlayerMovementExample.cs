@@ -18,6 +18,8 @@ public class PlayerMovementExample : MonoBehaviour {
 
     void Awake()
     {
+        maxScore = Coll.Length;
+        currentScore = maxScore;
         spawn = transform.position;                     //Spawn point
         playerRigidbody = GetComponent<Rigidbody>();    //Player's Rigid body
     }
@@ -26,7 +28,7 @@ public class PlayerMovementExample : MonoBehaviour {
     {
         //For three D movement but can be changed
         float h = Input.GetAxisRaw("Horizontal");//Input for horizontal movement
-        float v = Input.GetAxisRaw("Vertical");// Input
+        float v = Input.GetAxisRaw("Vertical");
        
         if(jump == true)
         {
@@ -49,6 +51,7 @@ public class PlayerMovementExample : MonoBehaviour {
     {
         //Instantiate(deathParticals, transform.position, Quaternion.identity);
         transform.position = spawn;
+        ResetCollect();
     }
 
     void OnTriggerEnter(Collider other) //Used to see of what the player has triggered an object
@@ -62,7 +65,7 @@ public class PlayerMovementExample : MonoBehaviour {
 
         if (other.transform.tag == ("Goal") && currentScore <= 0)//Goal trigger
         {
-            //LevelController.CompleteLevel();
+            LevelController.CompleteLevel();
         } 
     }
 
@@ -81,7 +84,7 @@ public class PlayerMovementExample : MonoBehaviour {
 
     void ResetCollect()//Resetting the collectables to active
     {
-        for(int i = 0; currentScore >= 0; i++)
+        for(int i = 0; i < Coll.Length ; i++)
         {
             Coll[i].SetActive(true);
         }
